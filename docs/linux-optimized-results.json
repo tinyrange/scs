@@ -1,0 +1,244 @@
+{
+  "conversion_time_target_met": false,
+  "corpora": {
+    "github": {
+      "artifact": ".work/linux-gh-run6.scs",
+      "git_baseline": {
+        "fsync": "all",
+        "git_repository_bytes": 9178045786,
+        "git_version": "git version 2.55.0\n",
+        "go_version": "go1.27.0-X:nodwarf5",
+        "index_seconds": 300.736292873,
+        "max_rss_bytes": 1626316800,
+        "threads": "Git default",
+        "validation": "default index-pack canonical hash verification"
+      },
+      "native_import": {
+        "download": {
+          "advertised_refs": 2878,
+          "head": "fd179f8a05be3ccae366b9b96e176b51fbe54aab",
+          "objects": 13965796,
+          "pack_bytes": 8634988082,
+          "pack_hash": "1fc8d2bf8a7236883c16dd8483a589c976e05d40",
+          "receive_seconds": 1042.029744853,
+          "remote": "https://github.com/torvalds/linux.git"
+        },
+        "import_seconds": 759.26151477,
+        "logical_object_bytes": 203061968460,
+        "objects": 13965796,
+        "sampled_peak_heap_bytes": 11747941760,
+        "storage": {
+          "content_objects": 13965797,
+          "encoded_body_bytes": 10579775370,
+          "file_bytes": 12101453606,
+          "max_delta_depth": 16,
+          "native_bodies": 13965795,
+          "native_body_bytes": 203061968460,
+          "unique_block_bytes": 0,
+          "unique_blocks": 0
+        },
+        "types": {
+          "blob": {
+            "bytes": 175151648212,
+            "objects": 3949681
+          },
+          "commit": {
+            "bytes": 1613310874,
+            "objects": 1723992
+          },
+          "tag": {
+            "bytes": 554266,
+            "objects": 944
+          },
+          "tree": {
+            "bytes": 26296455108,
+            "objects": 8291179
+          }
+        }
+      },
+      "size_ratio": 1.3185218169710273,
+      "time_ratio": 2.5246753809345974,
+      "validation": {
+        "after_checkout": {
+          "content_objects": 14086188,
+          "encoded_body_bytes": 10579775370,
+          "file_bytes": 11174306219,
+          "max_delta_depth": 16,
+          "native_bodies": 13965795,
+          "native_body_bytes": 203061968460,
+          "unique_block_bytes": 0,
+          "unique_blocks": 0
+        },
+        "before_checkout": {
+          "content_objects": 13965797,
+          "encoded_body_bytes": 10579775370,
+          "file_bytes": 12101453606,
+          "max_delta_depth": 16,
+          "native_bodies": 13965795,
+          "native_body_bytes": 203061968460,
+          "unique_block_bytes": 0,
+          "unique_blocks": 0
+        },
+        "checkout_publish_seconds": 1.861991473,
+        "checkpoint_open_seconds": 15.700110512,
+        "edit_publish_seconds": 0.002337014,
+        "files": 95943,
+        "final": {
+          "content_objects": 14086194,
+          "encoded_body_bytes": 10579775478,
+          "file_bytes": 12130606587,
+          "max_delta_depth": 16,
+          "native_bodies": 13965796,
+          "native_body_bytes": 203062049540,
+          "unique_block_bytes": 0,
+          "unique_blocks": 0
+        },
+        "git_repository_bytes": 9178045786,
+        "head_file_bytes": 1640936478,
+        "independent_git_comparisons": 4279,
+        "isolation": true,
+        "paths": 102326,
+        "physical_scrub_seconds": 35.574396666
+      }
+    },
+    "kernel_org": {
+      "artifact": ".work/linux-opt-run6.scs",
+      "git_baseline": {
+        "fsync": "all",
+        "git_repository_bytes": 3679280138,
+        "git_version": "git version 2.55.0\n",
+        "go_version": "go1.27.0-X:nodwarf5",
+        "index_seconds": 184.243897933,
+        "max_rss_bytes": 1127276544,
+        "objects": 11844313,
+        "pack_bytes": 3246684402,
+        "threads": "Git default",
+        "validation": "default index-pack canonical hash verification"
+      },
+      "native_import": {
+        "download": {
+          "advertised_refs": 948,
+          "head": "fd179f8a05be3ccae366b9b96e176b51fbe54aab",
+          "objects": 11844313,
+          "pack_bytes": 3246684402,
+          "pack_hash": "5de2137cad9d243648915f21a4dff26cb35482ec",
+          "receive_seconds": 2812.661107147,
+          "remote": "https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git"
+        },
+        "import_seconds": 405.412094891,
+        "logical_object_bytes": 162455126716,
+        "objects": 11844313,
+        "sampled_peak_heap_bytes": 11016585464,
+        "storage": {
+          "content_objects": 11844314,
+          "encoded_body_bytes": 5987186807,
+          "file_bytes": 7271507795,
+          "max_delta_depth": 16,
+          "native_bodies": 11844313,
+          "native_body_bytes": 162455126716,
+          "unique_block_bytes": 0,
+          "unique_blocks": 0
+        },
+        "types": {
+          "blob": {
+            "bytes": 138379548183,
+            "objects": 3197284
+          },
+          "commit": {
+            "bytes": 1352880198,
+            "objects": 1484045
+          },
+          "tag": {
+            "bytes": 554266,
+            "objects": 944
+          },
+          "tree": {
+            "bytes": 22722144069,
+            "objects": 7162040
+          }
+        }
+      },
+      "size_ratio": 1.9763398062297806,
+      "time_ratio": 2.2004098884101304,
+      "validation": {
+        "after_checkout": {
+          "content_objects": 11964705,
+          "encoded_body_bytes": 5987186807,
+          "file_bytes": 6494612407,
+          "max_delta_depth": 16,
+          "native_bodies": 11844313,
+          "native_body_bytes": 162455126716,
+          "unique_block_bytes": 0,
+          "unique_blocks": 0
+        },
+        "before_checkout": {
+          "content_objects": 11844314,
+          "encoded_body_bytes": 5987186807,
+          "file_bytes": 7271507795,
+          "max_delta_depth": 16,
+          "native_bodies": 11844313,
+          "native_body_bytes": 162455126716,
+          "unique_block_bytes": 0,
+          "unique_blocks": 0
+        },
+        "checkout_publish_seconds": 2.277994084,
+        "checkpoint_open_seconds": 13.534027983,
+        "edit_publish_seconds": 0.003124934,
+        "files": 95943,
+        "final": {
+          "content_objects": 11964711,
+          "encoded_body_bytes": 5987186915,
+          "file_bytes": 7299997036,
+          "max_delta_depth": 16,
+          "native_bodies": 11844314,
+          "native_body_bytes": 162455207796,
+          "unique_block_bytes": 0,
+          "unique_blocks": 0
+        },
+        "git_repository_bytes": 3679280138,
+        "head_file_bytes": 1640936478,
+        "independent_git_comparisons": 2136,
+        "isolation": true,
+        "paths": 102326,
+        "physical_scrub_seconds": 26.724340499
+      }
+    }
+  },
+  "cpu": "Intel Core i7-1165G7",
+  "format": "SCSREPO3",
+  "gomemlimit": "20GiB",
+  "kernel_trials": [
+    {
+      "name": "initial",
+      "native_bytes": 7508729986,
+      "seconds": 1246.64796139
+    },
+    {
+      "name": "binary_indexes",
+      "native_bytes": 7271747710,
+      "seconds": 992.904805796
+    },
+    {
+      "name": "parallel_4",
+      "native_bytes": 7271503400,
+      "seconds": 538.189134383
+    },
+    {
+      "name": "streaming_4",
+      "native_bytes": 7271503279,
+      "seconds": 411.177695606
+    },
+    {
+      "name": "streaming_6",
+      "native_bytes": 7271507795,
+      "seconds": 405.412094891
+    }
+  ],
+  "logical_cpus": 8,
+  "max_import_workers": 6,
+  "measured_date": "2026-09-27",
+  "native_cpu_profiled": true,
+  "network_excluded": true,
+  "original_refs_and_type_inventory_match": true,
+  "size_target_met": true
+}

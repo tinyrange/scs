@@ -1,0 +1,214 @@
+{
+  "measurement": "Linux wait4 ru_maxrss; five fresh child processes per mode; OS caches not flushed; independent repository copy; build and copy excluded",
+  "samples": {
+    "batch": [
+      {
+        "checkout_seconds": 2.9028e-05,
+        "close_seconds": 7.681e-06,
+        "cycle_seconds": 0.091730636,
+        "heap_alloc_bytes": 32480976,
+        "open_seconds": 0.004260427,
+        "peak_rss_bytes": 40189952,
+        "publish_seconds": 0.017904063,
+        "read_modify_write_seconds": 0.069526507
+      },
+      {
+        "checkout_seconds": 2.607e-05,
+        "close_seconds": 6.507e-06,
+        "cycle_seconds": 0.075029375,
+        "heap_alloc_bytes": 19988760,
+        "open_seconds": 0.004169981,
+        "peak_rss_bytes": 37306368,
+        "publish_seconds": 0.017687779,
+        "read_modify_write_seconds": 0.053136755
+      },
+      {
+        "checkout_seconds": 2.3456e-05,
+        "close_seconds": 7.12e-06,
+        "cycle_seconds": 0.077021745,
+        "heap_alloc_bytes": 30397360,
+        "open_seconds": 0.00436854,
+        "peak_rss_bytes": 37830656,
+        "publish_seconds": 0.015745347,
+        "read_modify_write_seconds": 0.056875257
+      },
+      {
+        "checkout_seconds": 3.3653e-05,
+        "close_seconds": 5.623e-06,
+        "cycle_seconds": 0.076474824,
+        "heap_alloc_bytes": 31490720,
+        "open_seconds": 0.004121924,
+        "peak_rss_bytes": 39141376,
+        "publish_seconds": 0.016556646,
+        "read_modify_write_seconds": 0.055754478
+      },
+      {
+        "checkout_seconds": 2.7298e-05,
+        "close_seconds": 5.849e-06,
+        "cycle_seconds": 0.083056605,
+        "heap_alloc_bytes": 23688504,
+        "open_seconds": 0.004575444,
+        "peak_rss_bytes": 47136768,
+        "publish_seconds": 0.017205018,
+        "read_modify_write_seconds": 0.061240923
+      }
+    ],
+    "deep": [
+      {
+        "checkout_seconds": 2.142e-05,
+        "close_seconds": 8.994e-06,
+        "cycle_seconds": 0.121752816,
+        "heap_alloc_bytes": 11438688,
+        "open_seconds": 0.004173003,
+        "peak_rss_bytes": 25247744,
+        "publish_seconds": 0.008064465,
+        "read_modify_write_seconds": 0.10948296
+      },
+      {
+        "checkout_seconds": 3.2852e-05,
+        "close_seconds": 5.384e-06,
+        "cycle_seconds": 0.047136353,
+        "heap_alloc_bytes": 11453416,
+        "open_seconds": 0.007808015,
+        "peak_rss_bytes": 25772032,
+        "publish_seconds": 0.006506565,
+        "read_modify_write_seconds": 0.032780529
+      },
+      {
+        "checkout_seconds": 2.7087e-05,
+        "close_seconds": 6.185e-06,
+        "cycle_seconds": 0.040618312,
+        "heap_alloc_bytes": 11594960,
+        "open_seconds": 0.00487423,
+        "peak_rss_bytes": 25247744,
+        "publish_seconds": 0.006761636,
+        "read_modify_write_seconds": 0.028945682
+      },
+      {
+        "checkout_seconds": 2.7436e-05,
+        "close_seconds": 6.536e-06,
+        "cycle_seconds": 0.046109004,
+        "heap_alloc_bytes": 11334584,
+        "open_seconds": 0.004268916,
+        "peak_rss_bytes": 25772032,
+        "publish_seconds": 0.005715728,
+        "read_modify_write_seconds": 0.036087749
+      },
+      {
+        "checkout_seconds": 2.2327e-05,
+        "close_seconds": 6.471e-06,
+        "cycle_seconds": 0.041455406,
+        "heap_alloc_bytes": 11783856,
+        "open_seconds": 0.00410003,
+        "peak_rss_bytes": 25772032,
+        "publish_seconds": 0.006439312,
+        "read_modify_write_seconds": 0.030884914
+      }
+    ],
+    "read": [
+      {
+        "checkout_seconds": 0.00015476,
+        "close_seconds": 7.064e-06,
+        "cycle_seconds": 0.014268144,
+        "heap_alloc_bytes": 6949080,
+        "open_seconds": 0.00662588,
+        "peak_rss_bytes": 11485184,
+        "publish_seconds": 5e-08,
+        "read_modify_write_seconds": 0.007477351
+      },
+      {
+        "checkout_seconds": 2.0328e-05,
+        "close_seconds": 5.829e-06,
+        "cycle_seconds": 0.006272069,
+        "heap_alloc_bytes": 6942720,
+        "open_seconds": 0.004248913,
+        "peak_rss_bytes": 11354112,
+        "publish_seconds": 4.3e-08,
+        "read_modify_write_seconds": 0.001994938
+      },
+      {
+        "checkout_seconds": 2.0135e-05,
+        "close_seconds": 5.441e-06,
+        "cycle_seconds": 0.006107085,
+        "heap_alloc_bytes": 6943472,
+        "open_seconds": 0.003973562,
+        "peak_rss_bytes": 11354112,
+        "publish_seconds": 4e-08,
+        "read_modify_write_seconds": 0.002106039
+      },
+      {
+        "checkout_seconds": 3.1182e-05,
+        "close_seconds": 5.511e-06,
+        "cycle_seconds": 0.006150474,
+        "heap_alloc_bytes": 6942912,
+        "open_seconds": 0.004010824,
+        "peak_rss_bytes": 11354112,
+        "publish_seconds": 4.8e-08,
+        "read_modify_write_seconds": 0.002099996
+      },
+      {
+        "checkout_seconds": 2.7393e-05,
+        "close_seconds": 5.679e-06,
+        "cycle_seconds": 0.007210537,
+        "heap_alloc_bytes": 6948392,
+        "open_seconds": 0.005194706,
+        "peak_rss_bytes": 11354112,
+        "publish_seconds": 6.3e-08,
+        "read_modify_write_seconds": 0.00198102
+      }
+    ],
+    "single": [
+      {
+        "checkout_seconds": 2.7806e-05,
+        "close_seconds": 5.08e-06,
+        "cycle_seconds": 0.012944387,
+        "heap_alloc_bytes": 8412200,
+        "open_seconds": 0.004311807,
+        "peak_rss_bytes": 12926976,
+        "publish_seconds": 0.005528499,
+        "read_modify_write_seconds": 0.003069014
+      },
+      {
+        "checkout_seconds": 2.2304e-05,
+        "close_seconds": 5.064e-06,
+        "cycle_seconds": 0.012777418,
+        "heap_alloc_bytes": 8502776,
+        "open_seconds": 0.00488377,
+        "peak_rss_bytes": 12926976,
+        "publish_seconds": 0.004734669,
+        "read_modify_write_seconds": 0.00312973
+      },
+      {
+        "checkout_seconds": 2.2081e-05,
+        "close_seconds": 5.657e-06,
+        "cycle_seconds": 0.011450171,
+        "heap_alloc_bytes": 8593152,
+        "open_seconds": 0.004001647,
+        "peak_rss_bytes": 13320192,
+        "publish_seconds": 0.004309897,
+        "read_modify_write_seconds": 0.003108914
+      },
+      {
+        "checkout_seconds": 2.0377e-05,
+        "close_seconds": 4.669e-06,
+        "cycle_seconds": 0.012493862,
+        "heap_alloc_bytes": 8704928,
+        "open_seconds": 0.00423473,
+        "peak_rss_bytes": 14237696,
+        "publish_seconds": 0.004683631,
+        "read_modify_write_seconds": 0.003548897
+      },
+      {
+        "checkout_seconds": 2.2723e-05,
+        "close_seconds": 5.943e-06,
+        "cycle_seconds": 0.012346868,
+        "heap_alloc_bytes": 8776152,
+        "open_seconds": 0.004375938,
+        "peak_rss_bytes": 13582336,
+        "publish_seconds": 0.004612268,
+        "read_modify_write_seconds": 0.003327875
+      }
+    ]
+  },
+  "units": "bytes"
+}

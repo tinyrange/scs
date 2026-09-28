@@ -1,0 +1,65 @@
+{
+  "advertised_refs": 2878,
+  "download": {
+    "head": "fd179f8a05be3ccae366b9b96e176b51fbe54aab",
+    "objects": 13965796,
+    "pack_bytes": 8634987626,
+    "pack_hash": "2d2f6d93391a68d0d3c2e2de879a7a348bb5f8b5",
+    "receive_seconds": 932.215563702,
+    "remote": "https://github.com/torvalds/linux.git"
+  },
+  "import_seconds": 5124.648663125,
+  "logical_object_bytes": 203061968460,
+  "objects": 13965796,
+  "sampled_peak_heap_bytes": 18677609208,
+  "storage": {
+    "content_objects": 51887545,
+    "file_bytes": 127057736725,
+    "unique_block_bytes": 122619581189,
+    "unique_blocks": 37921748
+  },
+  "types": {
+    "blob": {
+      "bytes": 175151648212,
+      "objects": 3949681
+    },
+    "commit": {
+      "bytes": 1613310874,
+      "objects": 1723992
+    },
+    "tag": {
+      "bytes": 554266,
+      "objects": 944
+    },
+    "tree": {
+      "bytes": 26296455108,
+      "objects": 8291179
+    }
+  },
+  "validation": {
+    "AfterCheckout": {
+      "content_objects": 52007936,
+      "file_bytes": 127103919376,
+      "unique_block_bytes": 122619581189,
+      "unique_blocks": 37921748
+    },
+    "BeforeCheckout": {
+      "content_objects": 51887545,
+      "file_bytes": 127057736725,
+      "unique_block_bytes": 122619581189,
+      "unique_blocks": 37921748
+    },
+    "CheckoutSeconds": 11.423911294,
+    "Files": 95943,
+    "HeadFileBytes": 1640936478,
+    "Isolation": true,
+    "OpenSeconds": 229.127890899,
+    "Parents": [
+      "fddfc3ec31799a932bb92f1b8a84cb3d1f963be9",
+      "113dcdfadf30ea11fbbdfcd4f6ea87687655cc5b"
+    ],
+    "Paths": 102326,
+    "Snapshot": "6c29b5f409e5a5a151ff9852fac6a367523f7ec73adcf2faa5bced3a622357c3",
+    "VerifiedRefs": 2878
+  }
+}
