@@ -75,7 +75,7 @@ func (r *Repository) saveNode(n *node) (ID, error) {
 		var index ID
 		index, err = r.saveIndex(n.children)
 		if err == nil {
-			id, err = r.putJSON(treeKind, tree{Index: index})
+			id, err = r.putJSON(treeKind, tree{Index: index, Times: n.entry.Times})
 		}
 	}
 	if err == nil {

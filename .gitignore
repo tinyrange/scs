@@ -2,3 +2,17 @@
 /bin/
 *.scs
 /.work/
+
+# Local agent state and per-machine configuration.
+/HANDOFF.md
+/AGENTS.local.star
+
+# Local credentials; publish only deliberately sanitized examples.
+.env
+.env.*
+!.env.example
+*.key
+*.p12
+*.pfx
+/id_rsa
+/id_ed25519

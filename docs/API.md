@@ -24,7 +24,8 @@ Native network history ingestion is exposed by `j5.nz/scs/gitstore.Clone`; see
 `OpenGitObject` provide seekable streaming reads without whole-body allocations.
 
 The workspace exposes `ReadFile`, streaming `WriteFrom`, `WriteFile`, `Replace`,
-`ListDir`, `Paths`, `PathsWithError`, `Glob`, `Mkdir`, `Delete`, `Rename`, `Chmod`, `Stat`, `Symlink`,
+`ListDir`, `Paths`, `PathsWithError`, `Glob`, `Mkdir`, `Delete`, `Rename`, `RenameReplace`,
+`SetTimes`, `Chmod`, `Stat`, `Symlink`,
 `Readlink`, `Readonly`, `Snapshot`, `Fork`, and `Publish`. Entry block lists returned
 by `Stat` are copies, not mutable aliases into workspace state.
 
@@ -56,7 +57,10 @@ available through the Starlark workspace itself.
   Existing file modes survive content replacement. Root mode is fixed at `0755`.
 - Mode bits are retained metadata, not API authorization checks. The workspace's
   writable/read-only capability determines permission to mutate. There are no
-  UID/GID, timestamps, ACLs, xattrs, hard links, or device nodes in this MVP.
+  UID/GID, ACLs, xattrs, hard links, or device nodes in the native API. `Entry.Times`
+  stores nanosecond atime/mtime/ctime; `SetTimes` sets them explicitly, including
+  on roots and symlinks. Legacy metadata reads as epoch; native content writes
+  preserve existing times. Automatic timestamp updates are supplied by cah.
 - Errors stop Starlark execution. Mutations return `None`; reads return values.
 
 ## Compatible operations
@@ -130,8 +134,8 @@ then sync before returning. Directory pages split/collapse deterministically,
 so snapshot IDs within v2 are independent of insertion/deletion order.
 A dirty `fork()` pays the same persistence cost; its returned handle then shares
 the snapshot root. Edits in either handle path-copy metadata without changing the
-other. Cold host-side `Repository.Fork(id)`/`Checkout(name)` still load and validate
-the tree; they do not use this in-memory fast path.
+other. Host-side `Repository.Fork(id)`/`Checkout(name)` use lazy metadata loading in
+paged-index repositories; legacy/eager opens still load and validate the tree.
 
 Read-only capabilities deny *all* operations that mutate repository state,
 including snapshot/fork/publication. They do not expose the enclosing repository
@@ -162,7 +166,7 @@ resource limits and sandboxing before accepting adversarial workloads.
 
 ## Repository format compatibility
 
-This build creates/opens `SCSREPO2`. The previous `SCSREPO1` format is rejected
+This build creates/opens `SCSREPO2` and `SCSREPO3`. The previous `SCSREPO1` format is rejected
 without modification. Re-import Git into a new file, or use a v1 build to recover
 native edits from old files. There is no automatic conversion or cross-format
 snapshot-ID compatibility; workspace method signatures are unchanged.

@@ -4,6 +4,7 @@ go 1.27.0
 
 require (
 	github.com/go-git/go-git/v5 v5.19.2
+	github.com/hanwen/go-fuse/v2 v2.10.1
 	github.com/klauspost/compress v1.18.0
 	github.com/pjbgf/sha1cd v0.6.0
 	go.starlark.net v0.0.0-20260908191801-89a6a09411d5

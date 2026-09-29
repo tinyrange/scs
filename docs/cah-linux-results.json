@@ -1,0 +1,144 @@
+{
+  "artifact": ".work/linux-fast-open.scs",
+  "blocker": null,
+  "bzImage_build_attempted": true,
+  "commit": "Not performed: no approved Git capability in this session.",
+  "concurrent_appends": 100,
+  "copy_file_range_check": {
+    "exit_code": 0,
+    "note": "Kernel copy fallback verified; upstream opcode warning is not suppressed or implemented.",
+    "stderr": "",
+    "stdout": "Mounted semantics passed: copy_file_range fallback, replacement, open-unlinked, truncate/zero-fill, mmap, parallel offset writes, directory rename, symlinks, chmod, utime, failed rename atomicity\n",
+    "unsupported_opcode_warning": "2026/09/29 14:07:40 Unimplemented opcode COPY_FILE_RANGE_64\n"
+  },
+  "date": "2026-09-29",
+  "directory_fsync_passed": true,
+  "executable_shell_script_passed": true,
+  "filesystem": "fuse.cah",
+  "final_state": "Ordinarily unmounted after successful kernel hash/metadata verification on remount; both daemons published cah-linux and exited 0.",
+  "kernel_build": {
+    "boot_tested": false,
+    "clean_build": true,
+    "file_inspection": ". is a mountpoint\nvmlinux:               ELF 32-bit LSB executable, Intel i386, version 1 (SYSV), statically linked, BuildID[sha1]=d0761c298ff7ef514628b70b76a4cb499f143613, not stripped\narch/x86/boot/bzImage: Linux kernel x86 boot executable, bzImage, version 7.3.0-rc4 (cah@sandbox) #2 PREEMPT Tue Sep 29 04:12:17 UTC 2026, RO-rootFS, Normal VGA, setup size 512*31, syssize 0x9320, jump 0x26c 0x8cd88ec0fc8cd239 instruction, protocol 2.15, from protected-mode code at offset 0x79 0x8edbc bytes XZ compressed, max cmdline size 2047, init_size 0x2c3000\nCONFIG_KERNEL_XZ=y\nCONFIG_X86_32=y\n#define UTS_MACHINE\t\t\"i386\"\n#define LINUX_COMPILE_BY\t\"cah\"\n#define LINUX_COMPILE_HOST\t\"sandbox\"\n#define LINUX_COMPILER\t\t\"gcc (GCC) 16.2.1 20260810, GNU ld (GNU Binutils) 2.47\"\n",
+    "initial_build_duration_ms": 157740,
+    "phases": [
+      {
+        "argv": [
+          "make",
+          "--jobserver-style=pipe",
+          "clean"
+        ],
+        "duration_seconds": 34.996,
+        "exit_code": 0,
+        "stderr": ""
+      },
+      {
+        "argv": [
+          "make",
+          "--jobserver-style=pipe",
+          "tinyconfig"
+        ],
+        "duration_seconds": 9.203,
+        "exit_code": 0,
+        "stderr": ""
+      },
+      {
+        "argv": [
+          "make",
+          "--jobserver-style=pipe",
+          "-j4",
+          "bzImage"
+        ],
+        "duration_seconds": 144.976,
+        "exit_code": 0,
+        "stderr": ""
+      }
+    ],
+    "report": "cah-linux-kernel-build.json"
+  },
+  "kernel_image_produced": true,
+  "kernel_persistence_proof": {
+    "artifacts": {
+      ".config": {
+        "mode": 384,
+        "mtime_ns": 1790654995810379238,
+        "sha256": "e148f2a8db0d1da8feaf3efd82b8260653c7466cc98ac5e19fc796b352ccb653",
+        "size": 32647
+      },
+      "Makefile": {
+        "mode": 420,
+        "mtime_ns": 0,
+        "sha256": "c781de51faee30c800a3969205d04085a8bc12359fb633880187ad537e606011",
+        "size": 81066
+      },
+      "System.map": {
+        "mode": 384,
+        "mtime_ns": 1790655138909552093,
+        "sha256": "de72658e4ee19deab6e7ce9c77778ac1cc01cff3f9bd2b9e6688eeeef30d2ad8",
+        "size": 379950
+      },
+      "arch/x86/boot/bzImage": {
+        "mode": 384,
+        "mtime_ns": 1790655140771006321,
+        "sha256": "94386cf7cacffd84aa8bd32bd68ec1cae61a9ba287102e2e6bff7421f3c24ccf",
+        "size": 619008
+      },
+      "vmlinux": {
+        "mode": 448,
+        "mtime_ns": 1790655139025288593,
+        "sha256": "4d1c51d3f78206a27093247d76cfbbfe4596af637a71d16263f651c7fafdee85",
+        "size": 3089936
+      }
+    },
+    "persistence_verified": true
+  },
+  "kernel_unmount_exit_codes": [
+    0,
+    0
+  ],
+  "mount_semantics_passed": true,
+  "mountpoint": ".work/cah-mount",
+  "native_source_makefile_bytes": 81066,
+  "persistence_proof": {
+    ".cah-persistence-proof/data": {
+      "mode": 416,
+      "mtime_ns": 1234567890987654321,
+      "sha256": "1b270019f45840e44c59989ffad1b64209489f869e3859f794b7cb4b8d41a9dd",
+      "size": 16407
+    },
+    "Makefile": {
+      "mode": 420,
+      "mtime_ns": 0,
+      "sha256": "c781de51faee30c800a3969205d04085a8bc12359fb633880187ad537e606011",
+      "size": 81066
+    }
+  },
+  "previous_header_blocker": {
+    "blocker": "C development headers are unavailable inside the sandbox; /usr/include is not visible. Host installation versus sandbox visibility remains unresolved.",
+    "date": "2026-09-28",
+    "tinyconfig": {
+      "argv": [
+        "make",
+        "tinyconfig"
+      ],
+      "duration_ms": 590,
+      "exit_code": 2,
+      "stderr": "scripts/basic/fixdep.c:92:10: fatal error: sys/types.h: No such file or directory\n   92 | #include \u003csys/types.h\u003e\n      |          ^~~~~~~~~~~~~\ncompilation terminated.\nmake[2]: *** [scripts/Makefile.host:114: scripts/basic/fixdep] Error 1\nmake[1]: *** [<project-root>/.work/cah-mount/Makefile:676: scripts_basic] Error 2\nmake: *** [Makefile:248: __sub-make] Error 2\n",
+      "stdout": "  HOSTCC  scripts/basic/fixdep\n",
+      "tmpdir": ".work/cah-mount/.cah-tmp"
+    }
+  },
+  "remount_persistence_passed": true,
+  "tinyconfig": {
+    "argv": [
+      "make",
+      "--jobserver-style=pipe",
+      "tinyconfig"
+    ],
+    "duration_seconds": 9.203,
+    "exit_code": 0,
+    "stderr": "",
+    "stdout": "  HOSTCC  scripts/basic/fixdep\n  HOSTCC  scripts/kconfig/conf.o\n  HOSTCC  scripts/kconfig/confdata.o\n  HOSTCC  scripts/kconfig/expr.o\n  LEX     scripts/kconfig/lexer.lex.c\n  YACC    scripts/kconfig/parser.tab.[ch]\n  HOSTCC  scripts/kconfig/lexer.lex.o\n  HOSTCC  scripts/kconfig/menu.o\n  HOSTCC  scripts/kconfig/parser.tab.o\n  HOSTCC  scripts/kconfig/preprocess.o\n  HOSTCC  scripts/kconfig/symbol.o\n  HOSTCC  scripts/kconfig/util.o\n  HOSTLD  scripts/kconfig/conf\n#\n# configuration written to .config\n#\nUsing .config as base\nMerging ./kernel/configs/tiny.config\nValue of CONFIG_KERNEL_XZ is redefined by fragment ./kernel/configs/tiny.config:\nPrevious value: # CONFIG_KERNEL_XZ is not set\nNew value: CONFIG_KERNEL_XZ=y\n\nValue of CONFIG_CC_OPTIMIZE_FOR_SIZE is redefined by fragment ./kernel/configs/tiny.config:\nPrevious value: # CONFIG_CC_OPTIMIZE_FOR_SIZE is not set\nNew value: CONFIG_CC_OPTIMIZE_FOR_SIZE=y\n\nValue of CONFIG_SLUB_TINY is redefined by fragment ./kernel/configs/tiny.config:\nPrevious value: # CONFIG_SLUB_TINY is not set\nNew value: CONFIG_SLUB_TINY=y\n\nMerging ./arch/x86/configs/tiny.config\nValue of CONFIG_UNWINDER_GUESS is redefined by fragment ./arch/x86/configs/tiny.config:\nPrevious value: # CONFIG_UNWINDER_GUESS is not set\nNew value: CONFIG_UNWINDER_GUESS=y\n\n#\n# merged configuration written to .config (needs make)\n#\n#\n# configuration written to .config\n#\n"
+  },
+  "workspace": "cah-linux"
+}

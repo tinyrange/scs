@@ -6,8 +6,12 @@ run Starlark scripts against native workspace state. No working-directory
 export/import cycle is involved. See `docs/GIT.md` for native protocol cloning and `docs/LINUX-NATIVE.md`
 for the original v2 full Linux history experiment (13,965,796 objects).
 
-This is the first vertical slice toward exposed trees backed by FUSE and sandboxed
-execution. **FUSE, process execution, and network sync are not implemented yet.**
+Linux FUSE exposure is now implemented as **cah (Clients at Home)**; see
+`docs/CAH.md` for mounting, durability, limitations, and actual mount/remount
+validation. A tiny x86 Linux kernel has been built inside the approved host
+sandbox and its image/hash/metadata verified after unmount/remount. It has not
+been boot-tested. Process sandboxing is supplied by the host tooling, not by SCS
+itself; network sync remains unimplemented.
 
 ## Optimized native history
 
@@ -29,6 +33,12 @@ follow-up memory run observed a 122 ms outlier. OS caches were not flushed, and
 100 ms is not a hard bound. Interactive peak RSS was roughly 11–45 MiB. Existing optimized files need a one-time
 `scs checkpoint` conversion. `docs/LINUX-INCREMENTAL.md` retains the older
 17-second-open baseline.
+
+## Security and developer configuration
+
+Read `SECURITY.md` before using untrusted inputs or enabling `AGENTS.star`.
+The latter is privileged development-tool configuration, not a sandboxed SCS
+script, and is not required to build or use the command-line tools.
 
 ## Quick start
 

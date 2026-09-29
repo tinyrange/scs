@@ -100,6 +100,7 @@ func (r *Repository) materializeNode(n *node, depth int) (*node, error) {
 			return nil, e
 		}
 		out := &node{entry: n.entry, id: n.id}
+		out.entry.Times = t.Times
 		if t.Index == "" {
 			return out, nil
 		}

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"io/fs"
 	"path"
 	"sort"
 	"strings"
@@ -17,7 +18,15 @@ var (
 	ErrConflict = errors.New("workspace root changed; reopen before publishing")
 )
 
+// Times stores nanoseconds since the Unix epoch. Absent metadata reads as epoch.
+type Times struct {
+	A int64 `json:"a"`
+	M int64 `json:"m"`
+	C int64 `json:"c"`
+}
+
 type Entry struct {
+	Times  Times  `json:"times,omitzero"`
 	Body   ID     `json:"body,omitempty"`
 	GitOID string `json:"git_oid,omitempty"`
 	Kind   string `json:"kind"` // file, dir, symlink, gitlink
@@ -33,7 +42,8 @@ type child struct {
 	ID     ID     `json:"id"`
 }
 type tree struct {
-	Index ID `json:"index"`
+	Times Times `json:"times,omitzero"`
+	Index ID    `json:"index"`
 }
 type snapshot struct {
 	Tree         ID     `json:"tree"`
@@ -129,7 +139,7 @@ func (r *Repository) load(id ID) (*Workspace, error) {
 		if err := r.getJSON(id, treeKind, &t); err != nil {
 			return nil, err
 		}
-		n := &node{entry: Entry{Kind: "dir", Mode: mode}, id: id}
+		n := &node{entry: Entry{Kind: "dir", Mode: mode, Times: t.Times}, id: id}
 		if t.Index == "" {
 			return n, nil
 		}
@@ -220,7 +230,7 @@ func (w *Workspace) Stat(p string) (Entry, error) {
 	}
 	e, ok := w.s.get(p)
 	if !ok {
-		return Entry{}, fmt.Errorf("path not found: %s", p)
+		return Entry{}, fmt.Errorf("%w: %s", fs.ErrNotExist, p)
 	}
 	e.Blocks = append([]ID(nil), e.Blocks...)
 	return e, nil
@@ -330,6 +340,9 @@ func (w *Workspace) write(p string, input io.Reader, kind string, mode uint32) e
 		mode = old.Mode
 	}
 	e := Entry{Kind: kind, Mode: mode}
+	if old, ok := w.s.get(p); ok {
+		e.Times = old.Times
+	}
 	w.r.mu.Lock()
 	defer w.r.mu.Unlock()
 	if err := w.r.ready(); err != nil {
