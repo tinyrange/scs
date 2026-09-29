@@ -1,11 +1,16 @@
-# MVP architecture
+# Architecture and V2 format
+
+This document retains the V2 format design. For V3 compressed bodies and paged
+indexes, read `OPTIMIZED-STORAGE.md` and `FAST-OPEN.md`. For current implemented
+features and remaining work, use `STATUS.md`; session ownership is in `SESSIONS.md`.
 
 ## Product boundary
 
 The primary client is an agent running Starlark against a workspace capability.
 The native tree is the filesystem state, not a cache of a materialized Git working
-copy. Git supplies initial data. FUSE, process sandboxing, and synchronization will
-be additional clients/layers, not prerequisites for the storage API.
+copy. Git supplies initial data. cah provides FUSE as a separate client layer;
+process sandboxing is supplied by the host, and synchronization remains future
+work. None is a prerequisite for the storage API.
 
 The core design separates:
 
@@ -16,9 +21,10 @@ The core design separates:
 
 Capabilities are not hashed content. A read-only view shares the live tree; a fork
 has an independent root pointer and shares immutable in-memory nodes as well as
-stored objects. Independent checkout handles of the same name are not automatically coherent live views. The eventual
-mount/API integration must share the same workspace state, not create a second
-checkout behind each interface.
+stored objects. Independent checkout handles of the same name are not automatically
+coherent live views. Serialized sessions transfer exclusive ownership of the same
+workspace between API and mount phases, not a second checkout. Concurrent direct
+API/mount edits remain unsupported.
 
 ## Experimental file format: SCSREPO2
 
@@ -179,9 +185,10 @@ Git metadata; preserving a starting tree alone is insufficient.
 
 ## Current complexity and limits
 
-- Opening scans/hashes the whole file and builds an O(number of objects) index.
-- A cold checkout or `Repository.Fork(id)` loads tree metadata and block-ID lists,
-  not file bytes. It remains O(tree metadata).
+- V2/legacy opening scans the object log. Paged V3 uses persistent lookup pages
+  and lazy metadata, verifying content as accessed; full scrub remains explicit.
+- V2/eager checkout loads tree metadata and block-ID lists, not file bytes.
+  Paged V3 checkout/fork loads metadata lazily.
 - Clean `Workspace.Fork()` and repeated unchanged `Snapshot()` are O(1). First
   snapshots serialize all metadata; later snapshots skip unchanged subtrees.
   Dirty snapshot cost includes changed descriptors, bounded directory leaf and
@@ -190,8 +197,10 @@ Git metadata; preserving a starting tree alone is insufficient.
 - Metadata edits have expected O(sum of log fanouts along the path) index work,
   excluding file ingestion. Retained forks keep shared metadata alive until
   released. A single hash trie cannot exceed 64 branching levels.
-- Full reads, replacements, bounded reads, and searches currently materialize file
-  bytes. Streaming import exists; range I/O and streaming search are future work.
+- Script reads/replacements/search still materialize file bytes. Native immutable
+  readers support range I/O; cah uses dirty-page overlays with a byte budget.
+  Block reads are incremental, but compressed native bodies can decode in full.
+  Streaming search and bounded compressed-range decoding remain future work.
 - `list_dir` visits only the selected directory, collecting and sorting its
   entries when it spans multiple hash-trie leaves (O(fanout log fanout)). Small
   leaf-only directories are already sorted. This trades sorted-index traversal
@@ -204,19 +213,20 @@ Git metadata; preserving a starting tree alone is insufficient.
   extremely large files or named-root catalogs can still exceed the cap.
 - UTF-8 paths, a 4 KiB path-length limit, and a depth limit are intentional MVP
   restrictions. Graph size, heap usage, and script allocations have no hard quotas.
-- No compression, garbage collection, compaction, checkpoints, page allocator,
-  FUSE, process sandbox, merge/diff engine, remote protocol, or Git export.
+- No garbage collection, compaction, page allocator, built-in process sandbox,
+  merge engine, network synchronization, or Git commit export. Compression,
+  checkpoints, FUSE, Merkle-pruned path-level diff and full-tree tar export are
+  implemented.
 
-## Next vertical slice
+## Next vertical slices
 
-Expose a live workspace through FUSE and make a sandboxed process see precisely
-that state. Validate API-to-mount and mount-to-API coherence, including open-file
-behavior, rename/unlink, truncation, and concurrent readers/writers. Introduce
-range-oriented file I/O as demanded by that workflow. Incremental metadata and
-chunked on-disk directory indexes are implemented. Remaining storage targets
-include block-list indirection, object-index checkpoints, and catalog indexing.
+Serialized API/mount/inspection sessions are implemented; integrate them with a
+real host sandbox runner and measure resource use. Extend compressed-range
+reading/cache limits, mounted failure injection, and review/export capabilities
+before attempting concurrent live coherence. See `STATUS.md` for the ordered
+follow-up list and `TESTING.md` for current validation.
 
-Then synchronize immutable objects and separately publish selected roots to a
+Later, synchronize immutable objects and separately publish selected roots to a
 second repository. Object existence must remain independent of physical location.
 Concurrent root updates and authorization need explicit policies; block transfer
 alone does not resolve them.

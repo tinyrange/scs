@@ -13,6 +13,28 @@ sandbox and its image/hash/metadata verified after unmount/remount. It has not
 been boot-tested. Process sandboxing is supplied by the host tooling, not by SCS
 itself; network sync remains unimplemented.
 
+## Agent sessions and review
+
+`scs init project.scs` creates an empty native repository without Git.
+
+`cah -session -before edit.star -after inspect.star` now provides a serialized
+API edit → mounted build → read-only API inspection workflow, using a new isolated
+candidate workspace. The host still supplies sandboxed execution; source roots
+are never automatically promoted. `scs diff [-json]` prunes unchanged Merkle
+subtrees to review native changes (it is not an integrity scrub), and
+`scs export` writes a no-clobber full-tree tar. See `docs/SESSIONS.md`.
+
+Mounted writes use 4 KiB overlays with a configurable aggregate page budget
+(default 64 MiB), not whole-file write buffers. This is **not an RSS limit**;
+native body decoding and metadata remain additional. `docs/STATUS.md` lists
+implemented features and remaining work, and `docs/TESTING.md` describes the
+small disposable mounted crash/session suite and CI checks.
+
+`-build-result` optionally requires a fresh host-written build receipt so failed
+builds/timeouts fail the session without discarding candidate outputs. Actual
+sandboxed C compile/execute, compiler-failure, and controlled-timeout validation
+is recorded in `docs/SESSION-BUILD-DEMO.md`.
+
 ## Optimized native history
 
 `scs clone` now uses compressed native extent bodies, a batched writer, and an
@@ -189,6 +211,8 @@ interactive measurements, `docs/PERFORMANCE.md` for earlier measurements, and
 ```sh
 go test -race ./...
 go vet ./...
+# Optional, requires usable /dev/fuse and fusermount3:
+SCS_TEST_FUSE=1 go test -race -count=1 -run TestMounted ./cmd/cah
 ```
 
 The tests cover SHA-1/SHA-256 import, committed-versus-dirty inputs, binary data,

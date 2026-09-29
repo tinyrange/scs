@@ -24,30 +24,33 @@ import (
 )
 
 // FS holds all mutable state under mu. No caller may mutate w independently.
-// Writable files use memory buffers until Flush, not extracted host files.
-// A single file is limited to 1 GiB; total memory is not quota-controlled.
+// Writable files use quota-controlled page overlays, not extracted host files.
+// The quota covers overlay bytes, not metadata, native caches, or process RSS.
 type FS struct {
-	mu       sync.Mutex
-	w        *repo.Workspace
-	name     string
-	nodes    map[string]*Node
-	next     uint64
-	dirty    bool
-	uid, gid uint32
-	Root     *Node
+	mu                    sync.Mutex
+	bufferLimit, buffered int64
+	w                     *repo.Workspace
+	name                  string
+	nodes                 map[string]*Node
+	next                  uint64
+	dirty                 bool
+	uid, gid              uint32
+	Root                  *Node
 }
 
 type Node struct {
 	fs.Inode
-	owner         *FS
-	path          string // empty after unlink/replacement; descendants updated on rename
-	entry         repo.Entry
-	ino           uint64
-	reader        *repo.Reader
-	data          []byte
-	loaded, dirty bool
-	opens         int
-	target        string
+	owner        *FS
+	path         string // empty after unlink/replacement; descendants updated on rename
+	entry        repo.Entry
+	ino          uint64
+	reader       *repo.Reader
+	pages        map[int64][]byte
+	baseLimit    int64
+	dirty        bool
+	contentDirty bool
+	opens        int
+	target       string
 }
 
 type handle struct {
@@ -55,12 +58,25 @@ type handle struct {
 	flags uint32
 }
 
-func New(w *repo.Workspace, name string) (*FS, error) {
+// Options controls mount-local resources. A zero limit uses the default.
+type Options struct{ BufferLimit int64 }
+
+const DefaultBufferLimit int64 = 64 << 20
+
+func New(w *repo.Workspace, name string) (*FS, error) { return NewWithOptions(w, name, Options{}) }
+func NewWithOptions(w *repo.Workspace, name string, opts Options) (*FS, error) {
+	if opts.BufferLimit < 0 {
+		return nil, errors.New("negative buffer limit")
+	}
+	if opts.BufferLimit == 0 {
+		opts.BufferLimit = DefaultBufferLimit
+	}
+
 	e, err := w.Stat(".")
 	if err != nil {
 		return nil, err
 	}
-	f := &FS{w: w, name: name, nodes: make(map[string]*Node), next: 2, uid: uint32(os.Getuid()), gid: uint32(os.Getgid())}
+	f := &FS{bufferLimit: opts.BufferLimit, w: w, name: name, nodes: make(map[string]*Node), next: 2, uid: uint32(os.Getuid()), gid: uint32(os.Getgid())}
 	f.Root = &Node{owner: f, path: ".", entry: e, ino: 1}
 	f.nodes["."] = f.Root
 	return f, nil
@@ -199,7 +215,7 @@ func (n *Node) Readdir(ctx context.Context) (fs.DirStream, syscall.Errno) {
 	return fs.NewListDirStream(entries), 0
 }
 func (n *Node) ensureReader() error {
-	if n.reader != nil || n.loaded {
+	if n.reader != nil {
 		return nil
 	}
 	r, err := n.owner.w.OpenReader(n.path)
@@ -207,31 +223,12 @@ func (n *Node) ensureReader() error {
 		return err
 	}
 	n.reader = r
+	n.baseLimit = r.Size()
 	return nil
 }
 
 const maxFileSize = 1 << 30
 
-func (n *Node) load() error {
-	if n.loaded {
-		return nil
-	}
-	if n.entry.Size > maxFileSize {
-		return syscall.EFBIG
-	}
-	if err := n.ensureReader(); err != nil {
-		return err
-	}
-	data := make([]byte, int(n.entry.Size))
-	if _, err := n.reader.ReadAt(data, 0); err != nil {
-		return err
-	}
-	n.reader.Close()
-	n.reader = nil
-	n.data = data
-	n.loaded = true
-	return nil
-}
 func (n *Node) changed() {
 	now := time.Now().UnixNano()
 	n.entry.Times.M = now
@@ -243,24 +240,21 @@ func (n *Node) resize(size uint64) error {
 	if size > maxFileSize {
 		return syscall.EFBIG
 	}
-	if size == 0 {
-		if n.reader != nil {
-			n.reader.Close()
-			n.reader = nil
-		}
-		n.data = nil
-		n.loaded = true
-	} else {
-		if err := n.load(); err != nil {
-			return err
-		}
-		if int(size) > len(n.data) {
-			n.data = append(n.data, make([]byte, int(size)-len(n.data))...)
-		} else {
-			n.data = n.data[:int(size)]
+	if err := n.ensureReader(); err != nil {
+		return err
+	}
+	n.baseLimit = min(n.baseLimit, int64(size))
+	for index, page := range n.pages {
+		off := index * repo.BlockSize
+		if off >= int64(size) {
+			delete(n.pages, index)
+			n.owner.buffered -= repo.BlockSize
+		} else if off+repo.BlockSize > int64(size) {
+			clear(page[int64(size)-off:])
 		}
 	}
 	n.entry.Size = int64(size)
+	n.contentDirty = true
 	n.changed()
 	return nil
 }
@@ -297,20 +291,9 @@ func (h *handle) Read(ctx context.Context, dest []byte, off int64) (fuse.ReadRes
 	if off < 0 {
 		return nil, syscall.EINVAL
 	}
-	var count int
-	if n.loaded {
-		if off < int64(len(n.data)) {
-			count = copy(dest, n.data[off:])
-		}
-	} else {
-		if err := n.ensureReader(); err != nil {
-			return nil, errno(err)
-		}
-		var err error
-		count, err = n.reader.ReadAt(dest, off)
-		if err != nil && err != io.EOF {
-			return nil, errno(err)
-		}
+	count, err := n.readAt(dest, off)
+	if err != nil && err != io.EOF {
+		return nil, errno(err)
 	}
 	return fuse.ReadResultData(dest[:count]), 0
 }
@@ -330,18 +313,14 @@ func (h *handle) Write(ctx context.Context, data []byte, off int64) (uint32, sys
 	if h.flags&syscall.O_APPEND != 0 {
 		off = n.entry.Size
 	}
-	if off < 0 || off > maxFileSize || int64(len(data)) > maxFileSize-off {
+	if n.entry.Size > maxFileSize || off < 0 || off > maxFileSize || int64(len(data)) > maxFileSize-off {
 		return 0, syscall.EFBIG
 	}
-	if err := n.load(); err != nil {
+	if err := n.writePages(data, off); err != nil {
 		return 0, errno(err)
 	}
-	end := int(off) + len(data)
-	if end > len(n.data) {
-		n.data = append(n.data, make([]byte, end-len(n.data))...)
-	}
-	copy(n.data[int(off):], data)
-	n.entry.Size = int64(len(n.data))
+	n.entry.Size = max(n.entry.Size, off+int64(len(data)))
+	n.contentDirty = true
 	n.changed()
 	if h.flags&(syscall.O_SYNC|syscall.O_DSYNC) != 0 {
 		if err := f.sync(); err != nil {
@@ -354,15 +333,18 @@ func (n *Node) flush() error {
 	if !n.dirty || n.path == "" {
 		return nil
 	}
-	if n.loaded {
-		if err := n.owner.w.WriteFile(n.path, n.data); err != nil {
+	if n.contentDirty {
+		if err := n.owner.w.WritePages(n.path, n.reader, n.entry.Size, n.baseLimit, n.pages); err != nil {
 			return err
 		}
 	}
+
 	if err := n.owner.w.SetTimes(n.path, n.entry.Times); err != nil {
 		return err
 	}
 	n.dirty = false
+	n.contentDirty = false
+	n.dropBuffers()
 	return nil
 }
 func (h *handle) Flush(ctx context.Context) syscall.Errno {
@@ -375,13 +357,8 @@ func (h *handle) Release(ctx context.Context) syscall.Errno {
 	n.owner.mu.Lock()
 	defer n.owner.mu.Unlock()
 	n.opens--
-	if n.opens == 0 && !n.dirty {
-		if n.reader != nil {
-			n.reader.Close()
-			n.reader = nil
-		}
-		n.data = nil
-		n.loaded = false
+	if n.opens == 0 && (!n.dirty || n.path == "") {
+		n.dropBuffers()
 	}
 	return 0
 }
@@ -513,7 +490,6 @@ func (n *Node) Create(ctx context.Context, name string, flags, mode uint32, out 
 	if e != 0 {
 		return nil, nil, 0, e
 	}
-	child.loaded = true
 	child.opens++
 	return n.inode(ctx, child, out), &handle{n: child, flags: flags}, 0, 0
 }
@@ -577,6 +553,9 @@ func (n *Node) remove(name string, dir bool) syscall.Errno {
 	}
 	delete(f.nodes, p)
 	child.path = ""
+	if child.opens == 0 {
+		child.dropBuffers()
+	}
 	n.touchDir()
 	return 0
 }
@@ -630,6 +609,9 @@ func (n *Node) Rename(ctx context.Context, name string, newParent fs.InodeEmbedd
 	}
 	if dst != nil {
 		dst.path = ""
+		if dst.opens == 0 {
+			dst.dropBuffers()
+		}
 		delete(f.nodes, new)
 	}
 	moved := make(map[string]*Node)

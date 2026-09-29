@@ -132,11 +132,11 @@ func (r *Repository) appendCheckpointRecord(kind byte, data []byte) (ID, error) 
 	binary.BigEndian.PutUint64(h[1:9], uint64(len(data)))
 	raw, _ := hex.DecodeString(string(id))
 	copy(h[9:], raw)
-	if _, err := r.writer.Write(h[:]); err != nil {
+	if err := writePart(r.writer, h[:]); err != nil {
 		r.poisoned = err
 		return "", err
 	}
-	if _, err := r.writer.Write(data); err != nil {
+	if err := writePart(r.writer, data); err != nil {
 		r.poisoned = err
 		return "", err
 	}

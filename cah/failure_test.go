@@ -22,7 +22,7 @@ func TestFlushFailureRetainsDirtyData(t *testing.T) {
 		t.Fatal("failed flush marked data clean")
 	}
 	ok(t, h.Release(ctx))
-	if string(h.n.data) != "must not be discarded" {
+	if string(h.n.pages[0][:21]) != "must not be discarded" {
 		t.Fatal("release discarded failed write")
 	}
 }

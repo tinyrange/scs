@@ -150,8 +150,11 @@ This is content-ID compare-and-swap, not a monotonic revision counter.
 
 ## Deliberate omissions and execution limits
 
-No `path()` method exists because there is no host mount path yet. `format()` and
-`read_image()` are not implemented. `AGENTS.star` inside an imported tree is just
+No `path()` method is exposed by the script capability. cah has a host mountpoint,
+but its lifecycle and authority belong to the host, not a script. `format()` and
+`read_image()` are not implemented. Serialized session edit scripts additionally
+deny `snapshot()`, `fork()`, and `publish()`; post-mount inspection is read-only.
+See `SESSIONS.md`. `AGENTS.star` inside an imported tree is just
 data; this runtime does not evaluate agent configuration or confer host powers.
 
 Starlark permits top-level control flow, while loops, global reassignment, sets,

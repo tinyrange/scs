@@ -1,5 +1,5 @@
 // scs imports a committed Git tree and runs workspace scripts against a single
-// repository file. FUSE, process execution, and synchronization are later layers.
+// repository file. cah supplies FUSE; process isolation belongs to the host.
 package main
 
 import (
@@ -33,6 +33,7 @@ func main() {
 }
 
 const usage = `usage:
+  scs init [-name main] REPO
   scs clone [-name git] [-max-native-bytes 549755813888] URL REPO
   scs git-info [-catalog git] REPO
   scs git-cat [-catalog git] REPO REVISION
@@ -40,6 +41,8 @@ const usage = `usage:
   scs git-checkout [-catalog git] REPO REVISION WORKSPACE
   scs import [-rev HEAD] [-name main] CLONE REPO
   scs run [-workspace main] [-readonly] [-publish] [-timeout 1m] [-steps 10000000] REPO SCRIPT.star
+  scs diff [-json] REPO BEFORE AFTER
+  scs export REPO REF OUTPUT.tar
   scs refs REPO
   scs fork REPO SOURCE_NAME NEW_NAME
   scs fork -snapshot ID REPO NEW_NAME
@@ -68,6 +71,10 @@ func run(ctx context.Context, args []string, out, errs io.Writer) error {
 		return nil
 	case "clone", "git-info", "git-cat", "git-checkout", "git-parents", "checkpoint":
 		return runGit(ctx, args, out, errs)
+	case "init":
+		return runInit(ctx, args[1:], out, errs)
+	case "diff", "export":
+		return runReview(ctx, args, out, errs)
 	case "import":
 		f := flags("import", errs)
 		rev := f.String("rev", "HEAD", "commit to import")

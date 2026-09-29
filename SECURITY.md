@@ -26,9 +26,19 @@ Keep independent backups of important data.
 - Opening or checking a repository may repair an incomplete tail. Read-only
   workspace capabilities do not make the repository file physically read-only.
   Use a copy when inspecting evidence or unknown files.
-- cah buffers whole dirty files and has no aggregate memory quota. Its file
-  size limit is not a process memory limit. See `docs/CAH.md` for durability and
-  filesystem limitations, including the need for fsync or orderly publication.
+- cah charges dirty-page overlays against a configurable aggregate budget.
+  This is not a process memory quota: native decompression/caches, metadata,
+  kernel buffers, and transient allocations remain outside it. Enforce external
+  process limits. See `docs/CAH.md` for durability and filesystem limitations.
+- Session scripts cannot publish/fork/snapshot; the host publishes only their
+  isolated candidate. Inspection is read-only. Build success and candidate
+  acceptance remain external decisions, not consequences of successful unmount.
+  `-build-result` trusts a host-written receipt outside the mount, tied to a fresh
+  session token. Its parent directory must remain inaccessible to sandboxed
+  writers. A receipt is not cryptographic evidence of isolation or success.
+- Tar exports do not follow links, but preserve potentially absolute/escaping
+  symlink targets. Use safe, isolated extraction for untrusted archives. Export
+  is an intentional host-file write, separate from the Starlark capability.
 
 ## Reporting
 

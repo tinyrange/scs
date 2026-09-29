@@ -58,7 +58,7 @@ type Repository struct {
 	codec           *bodyCodec
 	verifiedBodies  map[objectKey][32]byte
 	mu              sync.Mutex
-	f               *os.File
+	f               repositoryFile
 	objects         map[objectKey]location
 	refs            map[string]ID
 	poisoned        error
@@ -308,9 +308,9 @@ func (r *Repository) appendEncoded(kind byte, id ID, data []byte, logical int, d
 	if r.writer != nil {
 		w = r.writer
 	}
-	_, err := w.Write(h[:])
+	err := writePart(w, h[:])
 	if err == nil {
-		_, err = w.Write(data)
+		err = writePart(w, data)
 	}
 	if err != nil {
 		r.poisoned = err
@@ -431,11 +431,16 @@ func (r *Repository) Close() error {
 	if r.f == nil {
 		return nil
 	}
-	var err error
-	if r.fast != nil && r.fast.sealed != r.end && r.poisoned == nil {
-		err = r.sync()
-	} else {
-		err = r.flush()
+	// Never retry buffered writes after a storage failure. In particular, a
+	// failed fsync must not turn into a successful Close merely because Flush
+	// has nothing left to write. Reopening determines the recovered root.
+	err := r.poisoned
+	if err == nil {
+		if r.fast != nil && r.fast.sealed != r.end {
+			err = r.sync()
+		} else {
+			err = r.flush()
+		}
 	}
 	closeErr := r.f.Close()
 	if err == nil {

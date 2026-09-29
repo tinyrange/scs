@@ -17,6 +17,8 @@ import (
 type Options struct {
 	MaxSteps uint64
 	Print    io.Writer
+	// NoPublish denies snapshot/fork/publication, including through derived views.
+	NoPublish bool
 }
 
 // Run does not implicitly publish, including on success. Publications made by a
@@ -44,13 +46,14 @@ func Run(ctx context.Context, w *repo.Workspace, filename string, source []byte,
 		case <-done:
 		}
 	}()
-	_, err := starlark.ExecFileOptions(&syntax.FileOptions{Set: true, While: true, TopLevelControl: true, GlobalReassign: true, Recursion: true}, thread, filename, source, starlark.StringDict{"workspace": &Value{w: w, ctx: ctx}})
+	_, err := starlark.ExecFileOptions(&syntax.FileOptions{Set: true, While: true, TopLevelControl: true, GlobalReassign: true, Recursion: true}, thread, filename, source, starlark.StringDict{"workspace": &Value{w: w, ctx: ctx, noPublish: opts.NoPublish}})
 	return err
 }
 
 type Value struct {
-	w   *repo.Workspace
-	ctx context.Context
+	w         *repo.Workspace
+	ctx       context.Context
+	noPublish bool
 }
 
 var _ starlark.HasAttrs = (*Value)(nil)
@@ -92,6 +95,10 @@ func list(ss []string) *starlark.List {
 	return starlark.NewList(vs)
 }
 func (v *Value) call(name string, a starlark.Tuple, k []starlark.Tuple) (starlark.Value, error) {
+	if v.noPublish && (name == "publish" || name == "fork" || name == "snapshot") {
+		return nil, fmt.Errorf("workspace.%s is controlled by the session host", name)
+	}
+
 	unpack := func(pairs ...any) error { return starlark.UnpackArgs("workspace."+name, a, k, pairs...) }
 	var p, q, s string
 	var err error
@@ -177,13 +184,13 @@ func (v *Value) call(name string, a starlark.Tuple, k []starlark.Tuple) (starlar
 			break
 		}
 		if name == "readonly" {
-			return &Value{w: v.w.Readonly(), ctx: v.ctx}, nil
+			return &Value{w: v.w.Readonly(), ctx: v.ctx, noPublish: v.noPublish}, nil
 		}
 		if name == "fork" {
 			var w *repo.Workspace
 			w, err = v.w.Fork()
 			if err == nil {
-				return &Value{w: w, ctx: v.ctx}, nil
+				return &Value{w: w, ctx: v.ctx, noPublish: v.noPublish}, nil
 			}
 		} else {
 			var id repo.ID

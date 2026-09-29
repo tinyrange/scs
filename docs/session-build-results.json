@@ -1,0 +1,268 @@
+{
+  "cases": [
+    {
+      "artifacts_verified": 7,
+      "build": {
+        "artifacts": {
+          "compile.stderr": {
+            "mode": 384,
+            "mtime_ns": 1790686993160885270,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "size": 0
+          },
+          "compile.stdout": {
+            "mode": 384,
+            "mtime_ns": 1790686993160801288,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "size": 0
+          },
+          "expected.txt": {
+            "mode": 420,
+            "mtime_ns": 0,
+            "sha256": "239679e7bd458571ebedaf9ab557e077457e6274f90a855c09edf3081efad2cb",
+            "size": 26
+          },
+          "hello": {
+            "mode": 448,
+            "mtime_ns": 1790686993243614530,
+            "sha256": "86b1fc344151f0a1c27f43358b8a2de8a3ede64249e64f2666148f3c20a655bd",
+            "size": 15992
+          },
+          "hello.c": {
+            "mode": 420,
+            "mtime_ns": 0,
+            "sha256": "d33bc40eb590a2d2a89e81c55cbff7c7195656cf4f16827e0418c7a2a276fd41",
+            "size": 153
+          },
+          "program.stderr": {
+            "mode": 384,
+            "mtime_ns": 1790686993279458411,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "size": 0
+          },
+          "program.stdout": {
+            "mode": 384,
+            "mtime_ns": 1790686993280766649,
+            "sha256": "239679e7bd458571ebedaf9ab557e077457e6274f90a855c09edf3081efad2cb",
+            "size": 26
+          }
+        },
+        "exit_code": 0,
+        "mode": "success",
+        "phases": [
+          {
+            "argv": [
+              "cc",
+              "-std=c11",
+              "-O2",
+              "-Wall",
+              "-Wextra",
+              "-Werror",
+              "hello.c",
+              "-o",
+              "hello"
+            ],
+            "duration_ms": 118,
+            "exit_code": 0,
+            "label": "compile",
+            "timed_out": false
+          },
+          {
+            "argv": [
+              "./hello"
+            ],
+            "duration_ms": 2,
+            "exit_code": 0,
+            "label": "program",
+            "timed_out": false
+          }
+        ],
+        "timed_out": false,
+        "version": 1
+      },
+      "build_exit": 0,
+      "cah_exit": 0,
+      "mode": "success",
+      "sandbox": true,
+      "source_unchanged": true
+    },
+    {
+      "artifacts_verified": 4,
+      "build": {
+        "artifacts": {
+          "compile.stderr": {
+            "mode": 384,
+            "mtime_ns": 1790687082323611951,
+            "sha256": "ac8aafe25974cf6970c1eabf67a6779cb7e188c7fb06ed52bf2c6c76865cb8e5",
+            "size": 111
+          },
+          "compile.stdout": {
+            "mode": 384,
+            "mtime_ns": 1790687082316084660,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "size": 0
+          },
+          "expected.txt": {
+            "mode": 420,
+            "mtime_ns": 0,
+            "sha256": "239679e7bd458571ebedaf9ab557e077457e6274f90a855c09edf3081efad2cb",
+            "size": 26
+          },
+          "hello.c": {
+            "mode": 420,
+            "mtime_ns": 0,
+            "sha256": "d33bc40eb590a2d2a89e81c55cbff7c7195656cf4f16827e0418c7a2a276fd41",
+            "size": 153
+          }
+        },
+        "exit_code": 1,
+        "mode": "failure",
+        "phases": [
+          {
+            "argv": [
+              "cc",
+              "-std=c11",
+              "-O2",
+              "-Wall",
+              "-Wextra",
+              "-Werror",
+              "-DFORCE_FAILURE",
+              "hello.c",
+              "-o",
+              "hello"
+            ],
+            "duration_ms": 16,
+            "exit_code": 1,
+            "label": "compile",
+            "timed_out": false
+          }
+        ],
+        "timed_out": false,
+        "version": 1
+      },
+      "build_exit": 1,
+      "cah_exit": 1,
+      "mode": "failure",
+      "sandbox": true,
+      "source_unchanged": true
+    },
+    {
+      "artifacts_verified": 9,
+      "build": {
+        "artifacts": {
+          "compile.stderr": {
+            "mode": 384,
+            "mtime_ns": 1790687017252677094,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "size": 0
+          },
+          "compile.stdout": {
+            "mode": 384,
+            "mtime_ns": 1790687017252602277,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "size": 0
+          },
+          "expected.txt": {
+            "mode": 420,
+            "mtime_ns": 0,
+            "sha256": "239679e7bd458571ebedaf9ab557e077457e6274f90a855c09edf3081efad2cb",
+            "size": 26
+          },
+          "hello": {
+            "mode": 448,
+            "mtime_ns": 1790687017281104516,
+            "sha256": "86b1fc344151f0a1c27f43358b8a2de8a3ede64249e64f2666148f3c20a655bd",
+            "size": 15992
+          },
+          "hello.c": {
+            "mode": 420,
+            "mtime_ns": 0,
+            "sha256": "d33bc40eb590a2d2a89e81c55cbff7c7195656cf4f16827e0418c7a2a276fd41",
+            "size": 153
+          },
+          "program.stderr": {
+            "mode": 384,
+            "mtime_ns": 1790687017285562649,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "size": 0
+          },
+          "program.stdout": {
+            "mode": 384,
+            "mtime_ns": 1790687017286716496,
+            "sha256": "239679e7bd458571ebedaf9ab557e077457e6274f90a855c09edf3081efad2cb",
+            "size": 26
+          },
+          "timeout.stderr": {
+            "mode": 384,
+            "mtime_ns": 1790687017288018290,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "size": 0
+          },
+          "timeout.stdout": {
+            "mode": 384,
+            "mtime_ns": 1790687017287967305,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "size": 0
+          }
+        },
+        "exit_code": 124,
+        "mode": "timeout",
+        "phases": [
+          {
+            "argv": [
+              "cc",
+              "-std=c11",
+              "-O2",
+              "-Wall",
+              "-Wextra",
+              "-Werror",
+              "hello.c",
+              "-o",
+              "hello"
+            ],
+            "duration_ms": 33,
+            "exit_code": 0,
+            "label": "compile",
+            "timed_out": false
+          },
+          {
+            "argv": [
+              "./hello"
+            ],
+            "duration_ms": 2,
+            "exit_code": 0,
+            "label": "program",
+            "timed_out": false
+          },
+          {
+            "argv": [
+              "/usr/bin/python3",
+              "-c",
+              "import time; time.sleep(60)"
+            ],
+            "duration_ms": 202,
+            "exit_code": -9,
+            "label": "timeout",
+            "timed_out": true
+          }
+        ],
+        "timed_out": true,
+        "version": 1
+      },
+      "build_exit": 124,
+      "cah_exit": 1,
+      "mode": "timeout",
+      "sandbox": true,
+      "source_unchanged": true
+    }
+  ],
+  "limits": [
+    "fixture timings are not comparative performance benchmarks",
+    "timeout is a controlled child phase, not the outer host deadline",
+    "reopen verifies hashes/sizes/modes, not mtime",
+    "process-group cleanup is not proof of hostile descendant containment",
+    "no large Linux artifact opened or modified"
+  ],
+  "method": "approved session_demo host helper; sandbox=True; fresh native repositories; ordinary unmount and independent CLI reopen",
+  "validation_date": "2026-09-29"
+}

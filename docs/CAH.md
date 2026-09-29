@@ -2,8 +2,8 @@
 
 `cah` is a Linux FUSE filesystem backed by the native SCS repository/workspace
 implementation. It does **not** extract files to a host backing directory. Native
-immutable readers supply unchanged file content; dirty regular files are buffered
-in memory and ingested into the same repository file on flush.
+immutable readers supply unchanged file content; dirty regular files use quota-controlled
+4 KiB page overlays and are ingested into the same repository file on flush.
 
 ## Mount
 
@@ -50,6 +50,28 @@ remount, feed the same script to `python3 - --verify` to compare file bytes and
 metadata with that manifest. This is build/persistence validation, not a boot
 test or a cold-cache performance benchmark.
 
+## Agent sessions and buffer budget
+
+Use `-session -before edit.star -after inspect.star` with a new target name for
+serialized native API editing, mounted execution under your host sandbox, and
+read-only inspection after unmount. See `SESSIONS.md` for the ownership contract,
+failed-build behavior, explicit acceptance, diff, and export commands.
+
+`-buffer-limit BYTES` sets the aggregate overlay budget (default 67,108,864).
+Every dirty page is charged 4,096 bytes. A write requiring more pages than the
+remaining budget returns ENOSPC before changing bytes, length, or timestamps.
+Flush releases pages after successful native ingestion; publication failure
+still retains the native live workspace for retry. Unlinked/replaced open files
+retain charged pages until their last handle closes. Sparse extension allocates
+no data pages until written. Flush materializes the block descriptor and dedups
+zero/unchanged blocks; this is not sparse allocation on the underlying host file.
+
+`repo.WritePages` atomically ingests overlays and reuses unchanged native blocks.
+It emits block-backed descriptors, including for formerly compressed-body files;
+this can trade compression for bounded write buffering. Native compressed reads
+may still reconstruct/cache a whole body. This change has not been performance-
+benchmarked against the older kernel-build timings below.
+
 ## Semantics and durability
 
 - Lazy lookup/getattr/readdir; no startup enumeration of the Linux source tree.
@@ -86,11 +108,12 @@ This is an experimental implementation, not a production POSIX filesystem:
   advisory locks, allocation guarantees, or meaningful statfs capacity reporting.
   Ownership is the mounting process's UID/GID; root mode is fixed at 0755.
 - Native UTF-8/path restrictions apply, including no backslashes. Files cannot
-  be mutated beyond 1 GiB. No memory quota or sparse-page overlay is implemented.
-- Writes materialize a complete file in memory. Closed clean buffers are released,
-  but metadata for visited nodes remains resident until unmount. Native body
-  reads may reconstruct an entire compressed body. This is not bounded-memory
-  operation for arbitrary workloads.
+  be mutated beyond 1 GiB. The overlay quota is not a total memory limit.
+- Dirty byte buffers are page-based and released after successful flush, but
+  metadata for visited nodes remains resident until unmount. Native body reads
+  may reconstruct/cache an entire compressed body. Descriptor arrays, decoding,
+  metadata and Go/kernel overhead are outside the page quota. Arbitrary workloads
+  still require external memory limits.
 - A mount-wide mutex serializes operations. Directory rename validates the moved
   subtree to retain native path limits; large renames can be expensive.
 - Flush is not publication. A crash without fsync can lose even previously closed
@@ -105,6 +128,12 @@ not a failed unmount or evidence of data loss. The mounted regression check now
 exercises `os.copy_file_range` in multiple chunks, verifies offsets/EOF, and
 compares source and destination bytes. The upstream warning is not suppressed;
 64-bit copy-opcode support has not been added to the dependency.
+
+## Current regression suite
+
+See `TESTING.md` for disposable mounted crash/session tests and ordinary quota,
+randomized I/O, storage failure, publication retry, and diff/export tests. The
+historical large-corpus results below predate page overlays and session mode.
 
 ## Validation on September 28, 2026
 
